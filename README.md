@@ -9,6 +9,12 @@ Participating students:
 - Aida Vehapi (Konstanz)
 - Elida Vehapi (Konstanz)
 
+## Table of contents
+
+  - [SETUP](#setup)
+    - [Windows](#windows)
+    - [MAC](#mac)
+
 ## SETUP
 This Setup is for Visual Studio Code. <br>
 Extensions needed:
