@@ -1,1 +1,3 @@
-- Setup How To c++ ?
+- Add Extensions needed
+- django ? 
+c++ ?
