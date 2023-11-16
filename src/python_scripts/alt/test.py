@@ -4,7 +4,7 @@ import fourier as f
 import matplotlib.pyplot as plt
 
 # Daten aus der CSV-Datei laden
-dataframe = pd.read_csv("C:\\Users\\Viktoria Stiem\\Documents\\htwg Konstanz\\2324Wise\\teamprojekt\\Daten_pandas_2_weeks.csv")
+dataframe = pd.read_csv("your\path")
 column_name = 'RM_RBG_RAUMTEMPERATUR_POINT_ID_Value'
 time_series = np.array(dataframe[column_name])
 

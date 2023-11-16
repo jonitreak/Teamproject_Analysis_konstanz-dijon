@@ -6,17 +6,18 @@ import os as os
 def loaData(path): 
 
     dataframe = pd.read_csv(path)
-    #time_series = np.array(dataframe[column_name])
     return dataframe
 
-def validade_path(path):
-    if path.find("\"") != -1:
-        path = path.replace("\"", "")
-    if path.find("\\") != -1:
-        path = path.replace("\\", "\\\\")
 
-    _, file_extension = os.path.splitext(path.lower())
-    return file_extension == ".csv"
+# def validade_path(path):
+#     #TODO FIX !!
+#     if path.find("\"") != -1:
+#         path = path.replace("\"", "")
+#     if path.find("\\") != -1:
+#         path = path.replace("\\", "\\\\")
+
+#     _, file_extension = os.path.splitext(path.lower())
+#     return file_extension == ".csv"
 
 def get_column_names(dataframe):
     return dataframe.columns.tolist()
