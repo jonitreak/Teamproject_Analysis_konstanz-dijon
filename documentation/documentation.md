@@ -17,6 +17,7 @@ Contributing students:
   - [Project Overview](#project-overview)
   - [Data Collection](#data-collection)
     - [Data Sources](#data-sources)
+      - [BOSCH](#bosch)
     - [Data Preparation](#data-preparation)
   - [Data Analysis](#data-analysis)
     - [Exploratory Data Analysis](#exploratory-data-analysis)
@@ -43,8 +44,21 @@ Summarize the overall structure and goals of the project. Provide an outline of 
 Explain how data was collected for the sensory analysis. Include details about the data sources and the steps taken to prepare the data for analysis.
 
 ### Data Sources
+#### BOSCH
+- DSP= Deckenstrahlplatte (heating on the ceiling)
+- ERRECHNETE_RAUMTEMPERATURE_DSP = set temperature for this heating
+- RBG_RAUMTEMPERATUR = temperature of the room
+- ANSTEUERUNG_DSP_VENTIL = valve control for DSP heating
+- DSP_FLOOR_DISTRIBUTOR_DURCHFLUSS = volume flow at floor distributor to DSP heating [m^3/h]
+- DSP_FLOOR_DISTRIBUTOR_RUECKLAUFTEMPERATUR = temperature of outcoming volume flow [°C]
+- DSP_FLOOR_DISTRIBUTOR_VORLAUFTEMPERATUR = temperature of incoming volume flow [°C]
+- DSP_FLOOR_DISTRIBUTOR_LEISTUNG_EQUIPMENT = power of heating [kW]
+- HK_CIRCUIT = heating circuit (hot circuit)
+- KK_CIRCUIT = cooling circuit (cold circuit)
+- VL = incoming volume flow
+- RL = outcoming volume flow
 
-List the sources from which sensory data was collected. Include any relevant information about the data collection process.
+<!-- List the sources from which sensory data was collected. Include any relevant information about the data collection process. -->
 
 ### Data Preparation
 
