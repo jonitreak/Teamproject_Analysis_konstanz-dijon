@@ -55,9 +55,20 @@ while(size_valid == False):
 
 window_size = int(window_size)
 
-# intervall hard code TODO dynamic user input
+# intervall 
+interval_valid = False
 
-intervall = 15*60.0
+while(interval_valid == False):
+    global interval
+    interval = input("Select interval in Minutes: (must be numeric, enter 0 to quit)\n")
+    interval_valid = interval.isnumeric()
+    if(selected_column == "0"):
+        quit()
+    if(column_valid == False):
+        print("To choose a interval please enter a numeric characters only\n")
+
+interval = int(interval) *60
+
 #smooth signal
 smoothed_signal = ff.smooth_signal(user_time_series, window_size)
 
