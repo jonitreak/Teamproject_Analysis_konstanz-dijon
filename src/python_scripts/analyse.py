@@ -73,7 +73,7 @@ def visualize_fourier_analysis(data):
 
 def main():
     # Beispiel: Dateipfad zur CSV-Datei
-    file_path = '/Users/elidavehapi/Documents/WS6/FranceProject/Teamproject_Analysis/src/data/daten.csv'
+    file_path = 'src\data\daten.csv'
 
     # Beispiel: Daten laden
     data = pd.read_csv(file_path, decimal=',')
