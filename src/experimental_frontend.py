@@ -73,4 +73,4 @@ interval = int(interval) *60
 smoothed_signal = ff.smooth_signal(user_time_series, window_size)
 
 #
-ff.fourier_plot(smoothed_signal, intervall)
+ff.fourier_plot(smoothed_signal, interval)
