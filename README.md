@@ -19,6 +19,7 @@ Participating students:
 This Setup is for Visual Studio Code. <br>
 Extensions needed:
 <!-- TO DO -->
+TODO
 _______________________________
 ### Windows
 
