@@ -17,21 +17,34 @@ def perform_fourier_analysis(data: pd.DataFrame, column_name, start_date, end_da
     # Convert time differences to seconds
     time_diff_seconds = np.diff(timestamps).astype('timedelta64[s]').astype(float)
 
-    # Perform Fourier transformation
-    fft_result = np.fft.fft(column_values)
-    freqs = np.fft.fftfreq(len(timestamps), np.mean(time_diff_seconds))
+    # Perform Fourier transformation in chunks
+    chunk_size = 1024  # Adjust the chunk size as needed
+    num_chunks = len(column_values) // chunk_size
+    fft_result = np.zeros_like(column_values, dtype=np.complex128)
+
+    for i in range(num_chunks):
+        start_idx = i * chunk_size
+        end_idx = (i + 1) * chunk_size
+        subset = column_values[start_idx:end_idx]
+        fft_result[start_idx:end_idx] = np.fft.fft(subset)
+
+    # Handle the remaining part (if any)
+    remaining_start = num_chunks * chunk_size
+    fft_result[remaining_start:] = np.fft.fft(column_values[remaining_start:])
+
+    freqs = np.fft.fftfreq(len(column_values), np.mean(time_diff_seconds))
 
     # Consider only positive frequencies
-    positive_freqs = freqs[:len(freqs)//2]
-    positive_fft_result = np.abs(fft_result)[:len(fft_result)//2]
+    positive_freqs = freqs[:len(column_values)//2]
+    positive_fft_result = np.abs(fft_result)[:len(column_values)//2]
 
     # Find dominant frequency
     dominant_freq_index = np.argmax(positive_fft_result)
     dominant_freq = positive_freqs[dominant_freq_index]
     print(f'Dominant frequency: {dominant_freq} Hz')
 
-    # Create a time array with the same length as fft_inversed
-    time_array = np.arange(len(positive_fft_result)) * 15
+    # Create a time array with the same length as column_values
+    time_array = np.arange(len(column_values)) * 15
 
     return positive_freqs, positive_fft_result, time_array, column_values
 
@@ -56,12 +69,17 @@ def visualize_fourier_analysis(data: pd.DataFrame, column_name, start_date, end_
     # Inverse Fourier Analysis back to the time domain
     fft_filtered = fft_result * (np.abs(fft_result) > threshold)
     fft_inversed = inverse_fourier(fft_filtered)
-    second_time_array = np.arange(len(column_values)) * 15
+
     # Plot
     plt.figure(figsize=(10, 6))
-    plt.plot(second_time_array, column_values, color= 'b' )
-    plt.plot(time_array, fft_inversed, label=f'Fourier Transform of {column_name}', color = 'g')
+    
+    # Ensure lengths match before plotting
+    min_length = min(len(time_array), len(fft_inversed), len(column_values))
+    
+    plt.plot(time_array[:min_length], column_values[:min_length], color='b', label='Original Data')
+    plt.plot(time_array[:min_length], fft_inversed[:min_length], label=f'Fourier Transform of {column_name}', color='g')
     plt.axhline(y=threshold, color='r', linestyle='--', label=f'Threshold (Multiplier={threshold_multiplier})')
+    
     plt.title(f'Fourier Transform of {column_name} with Threshold')
     plt.xlabel('Time (Minutes)')
     plt.ylabel(column_name)
