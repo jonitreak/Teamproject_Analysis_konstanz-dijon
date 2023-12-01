@@ -1,11 +1,11 @@
-import data.data as dd
+from ...data import data as dd
 import python_scripts.analysis.fourier as ff
 
 print("****WELCOME TO FOURIER CLIENT****")
 #hardcode path since trouble reading in correct format for now
 # TODO dynamic path with user input
 
-file_path = "your\path"
+file_path = "C:\\Users\\Viktoria Stiem\\Documents\\htwg Konstanz\\2324Wise\\teamprojekt\\Daten_pandas_2_weeks.csv"
 # file_path= input("Which Data-file would you like to upload? File must be csv")
 # if dd.validade_path(file_path):
 #     print("File accepted")
