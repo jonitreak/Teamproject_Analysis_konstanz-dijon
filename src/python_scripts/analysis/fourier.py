@@ -31,9 +31,9 @@ def perform_fourier_analysis(data: pd.DataFrame, column_name, start_date, end_da
     print(f'Dominant frequency: {dominant_freq} Hz')
 
     # Create a time array with the same length as fft_inversed
-    time_array = np.arange(len(positive_fft_result)) * (15 / 60)  # Convert seconds to minutes
+    time_array = np.arange(len(positive_fft_result)) * 15
 
-    return positive_freqs, positive_fft_result, time_array
+    return positive_freqs, positive_fft_result, time_array, column_values
 
 def calculate_threshold(fft_result):
     # Calculate threshold as a multiple of the average amplitude of the dominant frequency
@@ -48,7 +48,7 @@ def inverse_fourier(signal_frequentiel):
 
 def visualize_fourier_analysis(data: pd.DataFrame, column_name, start_date, end_date):
     # Perform Fourier analysis
-    freqs, fft_result, time_array = perform_fourier_analysis(data, column_name, start_date, end_date)
+    freqs, fft_result, time_array, column_values = perform_fourier_analysis(data, column_name, start_date, end_date)
 
     # Calculate and print threshold
     threshold, threshold_multiplier = calculate_threshold(fft_result)
@@ -56,10 +56,11 @@ def visualize_fourier_analysis(data: pd.DataFrame, column_name, start_date, end_
     # Inverse Fourier Analysis back to the time domain
     fft_filtered = fft_result * (np.abs(fft_result) > threshold)
     fft_inversed = inverse_fourier(fft_filtered)
-
+    second_time_array = np.arange(len(column_values)) * 15
     # Plot
     plt.figure(figsize=(10, 6))
-    plt.plot(time_array, fft_inversed, label=f'Fourier Transform of {column_name}')
+    plt.plot(second_time_array, column_values, color= 'b' )
+    plt.plot(time_array, fft_inversed, label=f'Fourier Transform of {column_name}', color = 'g')
     plt.axhline(y=threshold, color='r', linestyle='--', label=f'Threshold (Multiplier={threshold_multiplier})')
     plt.title(f'Fourier Transform of {column_name} with Threshold')
     plt.xlabel('Time (Minutes)')
