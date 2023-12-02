@@ -30,7 +30,7 @@ def perform_fourier_analysis(data, column_name, start_date, end_date):
     positive_fft_result = np.abs(fft_result)[:len(fft_result)//2]
 
     # Remove DC component
-    positive_fft_result[0] = 0
+    #positive_fft_result[0] = 0
 
     # Find dominant frequency
     dominant_freq_index = np.argmax(positive_fft_result)
@@ -38,6 +38,7 @@ def perform_fourier_analysis(data, column_name, start_date, end_date):
     print(f'Dominant frequency: {dominant_freq} Hz')
 
     return positive_freqs, positive_fft_result
+
 
 def calculate_threshold(fft_result):
     # Calculate threshold as a multiple of the average amplitude of the dominant frequency
@@ -53,13 +54,11 @@ def visualize_fourier_analysis(data):
     # Get user input for the date range
     start_date = input('Enter the start date (YYYY-MM-DD): ')
     end_date = input('Enter the end date (YYYY-MM-DD): ')
-
+ 
     # Perform Fourier analysis
     freqs, fft_result = perform_fourier_analysis(data, column_name, start_date, end_date)
-
     # Calculate and print threshold
     threshold, threshold_multiplier = calculate_threshold(fft_result)
-
     # Plot
     plt.figure(figsize=(10, 6))
     plt.plot(freqs, fft_result, label=f'Fourier Transform of {column_name}')
