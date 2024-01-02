@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./src/python_scripts/data_handling",
+        "./src/python_scripts/analysis"
+    ]
+}

@@ -1,11 +1,15 @@
-from ...data import data as dd
+import python_scripts.data_handling.data_handler as dd
 import python_scripts.analysis.fourier as ff
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+from matplotlib.ticker import MultipleLocator
 
 print("****WELCOME TO FOURIER CLIENT****")
 #hardcode path since trouble reading in correct format for now
 # TODO dynamic path with user input
 
-file_path = "C:\\Users\\Viktoria Stiem\\Documents\\htwg Konstanz\\2324Wise\\teamprojekt\\Daten_pandas_2_weeks.csv"
+file_path = "C:\\Users\\Viktoria Stiem\\Documents\\htwg Konstanz\\2324Wise\\teamprojekt\\code\\Teamproject_Analysis\\src\\data\\daten.csv"
 # file_path= input("Which Data-file would you like to upload? File must be csv")
 # if dd.validade_path(file_path):
 #     print("File accepted")
@@ -27,7 +31,8 @@ print("666.: EXIT")
 column_valid = False
 while(column_valid == False):
     global selected_column_index
-    selected_column = input("Please select column number: ")
+    # selected_column = input("Please select column number: ")
+    selected_column = "2"
     column_valid = selected_column.isnumeric()
     if(selected_column == "666"):
         quit()
@@ -35,29 +40,27 @@ while(column_valid == False):
         print("To choose a Column Number please enter a numeric characters only")
 
 selected_column_index = int(selected_column)-1
+column_name = columns[selected_column_index]
 
-# time_series needed for fourier
-user_time_series = dd.get_time_series(user_data, columns[selected_column_index])
+# Get user input for the date range
+# start_date = input('Enter the start date (YYYY-MM-DD): ')
+# end_date = input('Enter the end date (YYYY-MM-DD): ')
+start_date = "2021-02-01"
+end_date = "2021-02-15"
 
-# get window_size
-size_valid = False
 
-while(size_valid == False):
-    global window_size
-    window_size = input("Select window_size: (must be numeric, enter 666 to quit)")
-    size_valid = window_size.isnumeric()
-    if(selected_column == "666"):
-        quit()
-    if(column_valid == False):
-        print("To choose a window size please enter a numeric characters only")
+ff.visualize_fourier_analysis(user_data, column_name, start_date, end_date)
 
-window_size = int(window_size)
 
-# intervall hard code TODO dynamic user input
 
-intervall = 15*60.0
-#smooth signal
-smoothed_signal = ff.smooth_signal(user_time_series, window_size)
+# for value in column_values:
+#     print(value)
 
-#
-ff.fourier_plot(smoothed_signal, intervall)
+
+# for values in timestamps:
+#     print(values)
+
+# print(timestamps[1])
+# for i in range(len(timestamps)):
+#     print(timestamps[i])
+    
