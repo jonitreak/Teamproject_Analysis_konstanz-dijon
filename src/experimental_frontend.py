@@ -6,15 +6,9 @@ print("****WELCOME TO FOURIER CLIENT****")
 # TODO dynamic path with user input
 
 file_path = "C:\\Users\\Viktoria Stiem\\Documents\\htwg Konstanz\\2324Wise\\teamprojekt\\code\\Teamproject_Analysis\\src\\data\\daten.csv"
-# file_path= input("Which Data-file would you like to upload? File must be csv")
-# if dd.validade_path(file_path):
-#     print("File accepted")
-# else:
-#     print("File not accepted")
-#     quit()
 
 #load data
-user_data = dd.loaData(file_path)
+user_data = dd.loaData()
 columns = dd.get_column_names(user_data)
 i = 0;
 
@@ -23,13 +17,13 @@ print("Which column would you like to analyse?")
 for column in columns:
     print(i+1 , ".: " , columns[i])
     i = i+1;
-print("666.: EXIT")
+print("0.: EXIT")
 column_valid = False
 while(column_valid == False):
     global selected_column_index
     selected_column = input("Please select column number: ")
     column_valid = selected_column.isnumeric()
-    if(selected_column == "666"):
+    if(selected_column == "0"):
         quit()
     if(column_valid == False):
         print("To choose a Column Number please enter a numeric characters only")

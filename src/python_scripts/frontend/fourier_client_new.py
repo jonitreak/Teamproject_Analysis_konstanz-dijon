@@ -6,15 +6,10 @@ print("****WELCOME TO FOURIER CLIENT****")
 # TODO dynamic path with user input
 
 file_path = "C:\\Users\\Viktoria Stiem\\Documents\\htwg Konstanz\\2324Wise\\teamprojekt\\code\\Teamproject_Analysis\\src\\data\\daten.csv"
-# file_path= input("Which Data-file would you like to upload? File must be csv")
-# if dd.validade_path(file_path):
-#     print("File accepted")
-# else:
-#     print("File not accepted")
-#     quit()
+file_path= input("Which csv Data-file would you like to upload?")
 
 #load data
-user_data = dd.loaData(file_path)
+user_data = dd.loaData()
 columns = dd.get_column_names(user_data)
 i = 0;
 
