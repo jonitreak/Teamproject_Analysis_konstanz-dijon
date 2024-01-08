@@ -2,24 +2,31 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 
-def perform_fourier_analysis(data, column_name, start_date, end_date):
+def smooth_signal(data, window_size):
+    # Funktion für gleitenden Durchschnitt
+    return data.rolling(window=window_size, min_periods=1).mean()
+
+def perform_fourier_analysis(data, column_name, start_date, end_date,smoothing_window_size=3):
     temperatures = data[column_name].astype(float)
     timestamps = pd.to_datetime(data['timestamp'].str[:19])
     start_date = np.datetime64(start_date)
     end_date = np.datetime64(end_date)
 
+    # Glättung des Signals mit gleitendem Durchschnitt
+    smoothed_temperatures = smooth_signal(temperatures, smoothing_window_size)
+
     time_diff_seconds = np.diff(timestamps).astype('timedelta64[s]').astype(float)
 
     # Filter data based on the specified date range
     mask = (timestamps >= start_date) & (timestamps <= end_date)
-    temperatures = temperatures[mask]
+    smoothed_temperatures = smoothed_temperatures[mask]
     timestamps = timestamps[mask]
 
     # Perform Fourier transformation
-    fft_result = np.fft.fft(temperatures)
+    fft_result = np.fft.fft(smoothed_temperatures)
     freqs = np.fft.fftfreq(len(timestamps), np.mean(time_diff_seconds))
 
-    return freqs, fft_result, timestamps, temperatures
+    return freqs, fft_result, timestamps, smoothed_temperatures
 
 def filter_frequencies(freqs, fft_result, threshold_multiplier=1):
     # Filter frequencies based on amplitude threshold
