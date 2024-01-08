@@ -83,7 +83,7 @@ def main():
 
     column_name = 'RM_RBG_RAUMTEMPERATUR_POINT_ID_Value'
     start_date = '2021-06-01'
-    end_date = '2021-06-22'
+    end_date = '2021-06-10'
 
     # column_name = input('Enter the column name for analysis: ')
     # start_date = input('Enter the start date (YYYY-MM-DD): ')
