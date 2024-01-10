@@ -2,101 +2,100 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 
-def perform_fourier_analysis(data, column_name, start_date, end_date):
- # Convert timestamps to datetime objects
-    timestamps = pd.to_datetime(data['timestamp'].str[:10])
 
-    # Convert start and end dates to datetime64[ns]
+
+def smooth_signal(data, window_size):
+    # Funktion für gleitenden Durchschnitt
+    return data.rolling(window=window_size, min_periods=1).mean()
+
+def perform_fourier_analysis(data, column_name, start_date, end_date,smoothing_window_size=3):
+    column_values = data[column_name].str.replace(',', '.').astype(float)
+    timestamps = pd.to_datetime(data['timestamp'].str[:19])
     start_date = np.datetime64(start_date)
     end_date = np.datetime64(end_date)
 
+    # Glättung des Signals mit gleitendem Durchschnitt
+    smoothed_column_values = smooth_signal(column_values, smoothing_window_size)
+
+    time_diff_seconds = np.diff(timestamps).astype('timedelta64[s]').astype(float)
+
     # Filter data based on the specified date range
     mask = (timestamps >= start_date) & (timestamps <= end_date)
-    filtered_data = data[mask]
-
-    # Select the specified column and replace commas with periods, then convert to float
-    column_values = filtered_data[column_name].str.replace(',', '.').astype(float)
-
-    # Convert time differences to seconds
-    time_diff_seconds = np.diff(timestamps[mask]).astype('timedelta64[s]').astype(float)
+    smoothed_column_values = smoothed_column_values[mask]
+    timestamps = timestamps[mask]
 
     # Perform Fourier transformation
-    fft_result = np.fft.fft(column_values)
-    freqs = np.fft.fftfreq(len(column_values), np.mean(time_diff_seconds))
+    fft_result = np.fft.fft(smoothed_column_values)
+    freqs = np.fft.fftfreq(len(timestamps), np.mean(time_diff_seconds))
 
-    # Consider only positive frequencies
-    positive_freqs = freqs[:len(freqs)//2]
-    positive_fft_result = np.abs(fft_result)[:len(column_values)//2]
+    return freqs, fft_result, timestamps, smoothed_column_values
 
-    # Find dominant frequency
-    dominant_freq_index = np.argmax(positive_fft_result)
-    dominant_freq = positive_freqs[dominant_freq_index]
-    print(f'Dominant frequency: {dominant_freq: .4f} Hz')
+def filter_frequencies(freqs, fft_result, threshold_multiplier=1):
+    # Filter frequencies based on amplitude threshold
+    threshold =  threshold_multiplier * np.mean(np.abs(fft_result))
+    filtered_freqs = freqs[np.abs(fft_result) > threshold]
+    filtered_fft_result = fft_result[np.abs(fft_result) > threshold]
 
-    return positive_freqs, positive_fft_result
+    return filtered_freqs, filtered_fft_result
 
-    #time_array = np.arange(len(column_values)) *15
-    
-    return positive_freqs, positive_fft_result
-
-def inverse_fourier(signal_frequentiel):
+def inverse_fourier(filtered_freqs, filtered_fft_result, original_length):
     # Inverse Fourier transformation
-    signal_temporel = np.fft.ifft(signal_frequentiel).real
-    return signal_temporel
+    reconstructed_signal_complex = np.zeros(original_length, dtype=np.complex128)
+    reconstructed_signal_complex[:len(filtered_freqs)] = filtered_fft_result
 
-def identify_anomalies(fft_result, threshold_multiplier=1.5):
-     # Calculate threshold as a multiple of the average amplitude of the dominant frequency
-    threshold = threshold_multiplier * np.mean(fft_result)
-    anomalies = fft_result > threshold
+    reconstructed_signal = np.fft.ifft(reconstructed_signal_complex).real
+
+    return reconstructed_signal
+
+def identify_anomalies(original_data, reconstructed_data, threshold_multiplier=2):
+   # Ensure lengths match
+    min_length = min(len(original_data), len(reconstructed_data))
+    original_data = original_data[:min_length]
+    reconstructed_data = reconstructed_data[:min_length]
+
+    # Calculate the threshold based on the absolute difference
+    threshold =  np.std(reconstructed_data)
+    anomalies = np.abs(original_data - reconstructed_data) > threshold
+
     print(f'Identified anomalies: {anomalies.sum()}')
     print('Threshold:', threshold)
-    return anomalies
 
+    return anomalies, threshold
 
-def visualize_fourier_analysis(ax, data, column_name, start_date, end_date):
-    # Perform Fourier analysis
-    freqs, fft_result = perform_fourier_analysis(data, column_name, start_date, end_date)
+def visualize_reconstructed_data(ax, timestamps, original_data, reconstructed_data, anomalies, threshold):
+    min_length = min(len(timestamps), len(reconstructed_data), len(original_data))
 
-    # Identify anomalies
-    anomalies = identify_anomalies(fft_result)
+    ax.plot(timestamps[:min_length], original_data.iloc[:min_length], label='Originaldaten')
+    ax.plot(timestamps[:min_length], reconstructed_data[:min_length], label='Rekonstruierte Daten', linestyle='--')
 
-    # Filter timestamps for the specified date range
-    mask = (data['timestamp'] >= start_date) & (data['timestamp'] <= end_date)
+    # Plotte den Schwellenwert um die rekonstruierten Daten
+    upper_threshold = reconstructed_data + threshold
+    lower_threshold = reconstructed_data - threshold
 
-    # Plot Fourier analysis
-    ax[0].plot(freqs, fft_result, label=f'Fourier Transform of {column_name}')
-    ax[0].scatter(freqs[anomalies], fft_result[anomalies], color='red', label='Anomalies')
-    ax[0].axhline(y=np.mean(fft_result), color='r', linestyle='--', label='Threshold')
-    ax[0].set_title(f'Fourier Transform of {column_name} with Anomalies')
-    ax[0].set_xlabel('Frequency (Hz)')
-    ax[0].set_ylabel('Amplitude')
-    ax[0].legend()
-    ax[0].grid(True)
+    ax.fill_between(timestamps[:min_length], lower_threshold[:min_length], upper_threshold[:min_length], color='lightgreen', alpha=0.6, label='Schwellenwert')
+    # Markiere Anomalien (Werte außerhalb des Schwellenwerts) mit roten Punkten
+    ax.scatter(timestamps[:min_length][anomalies], original_data[:min_length][anomalies], color='red', label='Anomalien')
 
-def visualize_transformed_data(ax, data, column_name, start_date, end_date):
-    # Perform Fourier analysis
-    freqs, fft_result = perform_fourier_analysis(data, column_name, start_date, end_date)
+    # Füge Text mit der Anzahl der Anomalien hinzu
+    ax.text(timestamps.iloc[0], max(original_data), f'Anzahl der Anomalien: {anomalies.sum()}', color='blue', fontsize=12)
 
-    # Reconstruct the signal using inverse Fourier transformation
-    reconstructed_signal = inverse_fourier(fft_result)
+    ax.set_title('Original vs. Reconstructed Data with Anomalies')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Value')
+    ax.legend()
+    ax.grid(True)
 
-    # Filter timestamps for the specified date range
-    mask = (data['timestamp'] >= start_date) & (data['timestamp'] <= end_date)
+def do_fourier(data, column_name, start_date, end_date):
+    freqs, fft_result, timestamps, column_values = perform_fourier_analysis(data, column_name, start_date, end_date)
+    filtered_freqs, filtered_fft_result = filter_frequencies(freqs, fft_result)
+    reconstructed_signal = inverse_fourier(filtered_freqs, filtered_fft_result, len(column_values))
 
-    # Ensure that the lengths of timestamp series match
-    # timestamps = data.loc[mask, 'timestamp'].values
-    # reconstructed_timestamps = data.loc[mask, 'timestamp'].values[:len(reconstructed_signal)]
-    timestamps = pd.to_datetime(data.loc[mask, 'timestamp'].str[:19])  # Convert to datetime with seconds
-    reconstructed_timestamps = pd.to_datetime(data.loc[mask, 'timestamp'].str[:19])[:len(reconstructed_signal)]  
-    
+    anomalies, threshold = identify_anomalies(column_values, reconstructed_signal)
 
-    # Plot the original and reconstructed data
-    ax[1].plot(timestamps, data.loc[mask, column_name], label='Original Data')
-    ax[1].plot(reconstructed_timestamps, reconstructed_signal, label='Reconstructed Data', linestyle='--')
-    ax[1].set_title(f'Original vs. Reconstructed Data for {column_name}')
-    ax[1].set_xlabel('Timestamp')
-    ax[1].set_ylabel('Value')
-    ax[1].legend()
-    ax[1].grid(True)
+    fig, ax = plt.subplots(figsize=(15, 5))
+    ax.set_ylim(min(column_values), max(column_values))
 
-    
+    visualize_reconstructed_data(ax, timestamps, column_values, reconstructed_signal, anomalies, threshold)
+    plt.tight_layout()
+    plt.show()
+

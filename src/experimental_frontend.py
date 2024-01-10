@@ -36,18 +36,5 @@ end_date = input('Enter the end date (YYYY-MM-DD): ')
 # start_date = "2021-02-01"
 # end_date = "2021-02-15"
 
-# Create subplots
-fig, ax = plt.subplots(1, 2, figsize=(15, 6))
 
-# fourier anlysis
-ff.visualize_fourier_analysis(ax, user_data, column_name, start_date, end_date)
-
-# transformed data
-
-ff.visualize_transformed_data(ax, user_data, column_name, start_date, end_date)
-
-# Adjust layout for better spacing
-plt.tight_layout()
-    
-# Show the plots
-plt.show()
+ff.do_fourier(user_data, column_name, start_date, end_date)
