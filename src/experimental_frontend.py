@@ -1,11 +1,12 @@
 import python_scripts.data_handling.data_handler as dd
 import python_scripts.analysis.fourier as ff
+from matplotlib import pyplot as plt
 
 print("****WELCOME TO FOURIER CLIENT****")
 #hardcode path since trouble reading in correct format for now
 # TODO dynamic path with user input
 
-file_path = "C:\\Users\\Viktoria Stiem\\Documents\\htwg Konstanz\\2324Wise\\teamprojekt\\code\\Teamproject_Analysis\\src\\data\\daten.csv"
+file_path = dd.loaData
 
 #load data
 user_data = dd.loaData()
@@ -37,4 +38,18 @@ column_name = columns[selected_column_index]
 start_date = "2021-02-01"
 end_date = "2021-02-15"
 
-ff.visualize_fourier_analysis(user_data, column_name, start_date, end_date)
+# Create subplots
+fig, ax = plt.subplots(1, 2, figsize=(15, 6))
+
+# fourier anlysis
+ff.visualize_fourier_analysis(ax, user_data, column_name, start_date, end_date)
+
+# transformed data
+
+ff.visualize_transformed_data(ax, user_data, column_name, start_date, end_date)
+
+# Adjust layout for better spacing
+plt.tight_layout()
+    
+# Show the plots
+plt.show()
