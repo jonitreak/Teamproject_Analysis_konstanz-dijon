@@ -3,8 +3,6 @@ import python_scripts.analysis.fourier as ff
 from matplotlib import pyplot as plt
 
 print("****WELCOME TO FOURIER CLIENT****")
-#hardcode path since trouble reading in correct format for now
-# TODO dynamic path with user input
 
 file_path = dd.loaData
 
@@ -33,10 +31,10 @@ selected_column_index = int(selected_column)-1
 column_name = columns[selected_column_index]
 
 # Get user input for the date range
-# start_date = input('Enter the start date (YYYY-MM-DD): ')
-# end_date = input('Enter the end date (YYYY-MM-DD): ')
-start_date = "2021-02-01"
-end_date = "2021-02-15"
+start_date = input('Enter the start date (YYYY-MM-DD): ')
+end_date = input('Enter the end date (YYYY-MM-DD): ')
+# start_date = "2021-02-01"
+# end_date = "2021-02-15"
 
 # Create subplots
 fig, ax = plt.subplots(1, 2, figsize=(15, 6))
