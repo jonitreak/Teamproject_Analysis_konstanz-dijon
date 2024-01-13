@@ -30,7 +30,7 @@ def perform_fourier_analysis(data, column_name, start_date, end_date,smoothing_w
 
     return freqs, fft_result, timestamps, smoothed_column_values
 
-def filter_frequencies(freqs, fft_result, threshold_multiplier=1):
+def filter_frequencies(freqs, fft_result, threshold_multiplier=5):
     # Filter frequencies based on amplitude threshold
     threshold =  threshold_multiplier * np.mean(np.abs(fft_result))
     filtered_freqs = freqs[np.abs(fft_result) > threshold]
@@ -47,14 +47,11 @@ def inverse_fourier(filtered_freqs, filtered_fft_result, original_length):
 
     return reconstructed_signal
 
-def identify_anomalies(original_data, reconstructed_data, threshold_multiplier=2):
-   # Ensure lengths match
-    min_length = min(len(original_data), len(reconstructed_data))
-    original_data = original_data[:min_length]
-    reconstructed_data = reconstructed_data[:min_length]
-
-    # Calculate the threshold based on the absolute difference
-    threshold =  np.std(reconstructed_data)
+def identify_anomalies(original_data, reconstructed_data, threshold_multiplier=1):
+    # Calculate the threshold based on a dynamic percentile that changes with the threshold_multiplier
+    # This makes the threshold more sensitive to changes in the threshold_multiplier
+    percentile = 100 - (threshold_multiplier * 10)  # Adjusting percentile based on multiplier
+    threshold = np.percentile(np.abs(original_data - reconstructed_data), percentile)
     anomalies = np.abs(original_data - reconstructed_data) > threshold
 
     print(f'Identified anomalies: {anomalies.sum()}')
