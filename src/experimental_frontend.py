@@ -4,7 +4,6 @@ from matplotlib import pyplot as plt
 
 print("****WELCOME TO FOURIER CLIENT****")
 
-file_path = dd.loaData
 
 #load data
 user_data = dd.loaData()
