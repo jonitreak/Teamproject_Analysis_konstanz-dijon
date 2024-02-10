@@ -1,8 +1,13 @@
-import subprocess
+import importlib
+import sys
+import os
+
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_root)
 
 class Start:
     def __init__(self):
-        self.available_clients = ["fourier", "multifactor", "data"]
+        self.available_clients = ["fourier", "var"]
 
     def run_client(self, client_name):
         """
@@ -12,17 +17,13 @@ class Start:
         """
         try:
             if client_name == "fourier":
-                subprocess.run(["python", "src\\python_scripts\\frontend\\experimental_frontend.py"], check=True)
+                fourier_handler = importlib.import_module('python_scripts.input_handling.fourier_handler')
+                fourier_handler.main()  # Ensure fourier_handler.py has a main function
             #TODO: Implement other client paths
-            # elif client_name == "multifactor":
-            #     subprocess.run(["python", ""], check=True)
-            # elif client_name == "data":
-            #     subprocess.run(["python", ""], check=True)
+            # elif client_name == "var":
             else:
                 print("Unknown client name. No action taken.")
                 quit()
-        except subprocess.CalledProcessError as e:
-            print(f"Error: {e}")
         except Exception as e:
             print(f"Error: {e}")
 
