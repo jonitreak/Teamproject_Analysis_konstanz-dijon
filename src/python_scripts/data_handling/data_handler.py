@@ -14,7 +14,8 @@ def parser(date: str):
 
 # load data for fourier
 def loaData(): 
-        path= "src\data\daten.csv"
+        path= "src/data/daten.csv"
+
         # Normalize the file path for the current operating system to ensure crossplattform compabilty
         normalized_path = os.path.normpath(path)
         dataframe = pd.read_csv(normalized_path)
