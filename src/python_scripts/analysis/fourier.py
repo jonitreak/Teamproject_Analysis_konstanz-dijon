@@ -8,7 +8,7 @@ def smooth_signal(data, window_size):
     # Funktion für gleitenden Durchschnitt
     return data.rolling(window=window_size, min_periods=1).mean()
 
-def perform_fourier_analysis(data, column_name, start_date, end_date,smoothing_window_size=8):
+def perform_fourier_analysis(data, column_name, start_date, end_date,smoothing_window_size=3):
     column_values = data[column_name].str.replace(',', '.').astype(float)
     timestamps = pd.to_datetime(data['timestamp'].str[:19])
     start_date = np.datetime64(start_date)
@@ -17,42 +17,44 @@ def perform_fourier_analysis(data, column_name, start_date, end_date,smoothing_w
     # Glättung des Signals mit gleitendem Durchschnitt
     smoothed_column_values = smooth_signal(column_values, smoothing_window_size)
 
-    time_diff_seconds = np.diff(timestamps).astype('timedelta64[s]').astype(float)
-
+    time_diff_seconds = 15* 60
     # Filter data based on the specified date range
     mask = (timestamps >= start_date) & (timestamps <= end_date)
     smoothed_column_values = smoothed_column_values[mask]
     timestamps = timestamps[mask]
+    if len(smoothed_column_values[mask]) % 2 != 0:
+        smoothed_column_values = smoothed_column_values[1:len(smoothed_column_values[mask])]
+        timestamps = timestamps[1:len(timestamps)]
+    print(len(timestamps))
 
     # Perform Fourier transformation
     fft_result = np.fft.fft(smoothed_column_values)
-    freqs = np.fft.fftfreq(len(timestamps), np.mean(time_diff_seconds))
-
+    freqs = np.fft.fftfreq(len(timestamps), time_diff_seconds)
+    print(freqs)
+    print(abs(freqs))
     return freqs, fft_result, timestamps, smoothed_column_values
 
-def filter_frequencies(freqs, fft_result, threshold_multiplier=3):
+def filter_frequencies(freqs, fft_result):
     # Filter frequencies based on amplitude threshold
-    print(fft_result)
-    threshold =  threshold_multiplier * np.mean(np.abs(freqs))
+    threshold =  0.00003
+    filtered_fft_result = fft_result
     filtered_freqs = freqs[np.abs(freqs) < threshold]
-    filtered_fft_result = fft_result[np.abs(freqs) < threshold]
+    filtered_fft_result[np.abs(freqs) > threshold]=0
 
     return filtered_freqs, filtered_fft_result
 
 def inverse_fourier(filtered_freqs, filtered_fft_result, original_length):
     # Inverse Fourier transformation
     reconstructed_signal_complex = np.zeros(original_length, dtype=np.complex128)
-    reconstructed_signal_complex[:len(filtered_freqs)] = filtered_fft_result
+    reconstructed_signal_complex = filtered_fft_result
 
-    reconstructed_signal = np.fft.ifft(reconstructed_signal_complex).real
-
+    reconstructed_signal = np.fft.irfft(reconstructed_signal_complex,original_length)
     return reconstructed_signal
 
 def identify_anomalies(original_data, reconstructed_data, threshold_multiplier=1):
     # Calculate the threshold based on a dynamic percentile that changes with the threshold_multiplier
     # This makes the threshold more sensitive to changes in the threshold_multiplier
-    percentile = 100 - (threshold_multiplier * 10)  # Adjusting percentile based on multiplier
-    threshold = np.percentile(np.abs(original_data - reconstructed_data), percentile)
+    threshold = np.std(np.abs(original_data - reconstructed_data))*threshold_multiplier    
     anomalies = np.abs(original_data - reconstructed_data) > threshold
 
     print(f'Identified anomalies: {anomalies.sum()}')

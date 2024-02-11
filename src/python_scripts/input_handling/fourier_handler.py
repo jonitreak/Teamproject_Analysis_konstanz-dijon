@@ -30,8 +30,8 @@ def main():
     # Uncomment these lines if you want to take user input for dates
     # start_date = input('Enter the start date (YYYY-MM-DD): ')
     # end_date = input('Enter the end date (YYYY-MM-DD): ')
-    start_date = "2021-02-01"
-    end_date = "2021-02-15"
+    start_date = "2021-06-01"
+    end_date = "2021-06-10"
 
     ff.do_fourier(user_data, column_name, start_date, end_date)
 
