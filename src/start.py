@@ -7,7 +7,7 @@ sys.path.append(project_root)
 
 class Start:
     def __init__(self):
-        self.available_clients = ["fourier", "var"]
+        self.available_clients = ["fourier"]
 
     def run_client(self, client_name):
         """

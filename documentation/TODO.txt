@@ -1,3 +1,0 @@
-- Add Extensions needed
-- django ? 
-c++ ?

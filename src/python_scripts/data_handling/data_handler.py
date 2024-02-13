@@ -71,4 +71,14 @@ def get_time_series(dataframe, column_name):
     time_series = np.array(dataframe[column_name])
     return time_series
 
+def get_valid_date(prompt):
+    while True:
+        try:
+            date_str = input(prompt)
+            # Try to parse the date string. If it's in the wrong format, ValueError will be raised
+            datetime.strptime(date_str, '%Y-%m-%d')
+            return date_str
+        except ValueError:
+            print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
+
 
